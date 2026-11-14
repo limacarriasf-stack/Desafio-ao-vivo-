@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#101329">
+<title>DESAFIO AO VIVO</title>
+<style>
+:root{--bg:#101329;--panel:#1a2040;--panel2:#242c53;--text:#fff;--muted:#b8c0e5;--a:#7c5cff;--b:#00d6a3;--yellow:#ffd166;--red:#ff5c7a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#27315f 0,#101329 55%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh;padding:18px}
+.wrap{max-width:760px;margin:auto}.top{text-align:center;padding:10px 0 18px}.live{display:inline-flex;align-items:center;gap:7px;background:#451d39;color:#ff9ab0;border:1px solid #a83d64;border-radius:30px;padding:6px 12px;font-size:12px;font-weight:800;letter-spacing:1px}.dot{width:8px;height:8px;background:#ff4c73;border-radius:50%;box-shadow:0 0 12px #ff4c73}h1{font-size:clamp(30px,8vw,48px);line-height:1;margin:15px 0 8px;letter-spacing:1px}h1 span{color:var(--yellow)}.sub{color:var(--muted);margin:0;font-size:14px}
+.card{background:linear-gradient(145deg,#20284d,#171d3a);border:1px solid #3b4779;border-radius:22px;padding:20px;margin:14px 0;box-shadow:0 14px 40px #05081766}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.tag{font-size:12px;color:#d6d9ff;background:#303a69;padding:6px 10px;border-radius:20px;font-weight:700}.counter{font-weight:800;color:var(--yellow);font-size:14px}
+.question{font-size:clamp(22px,6vw,32px);font-weight:850;line-height:1.2;margin:22px 0}.answers{display:grid;gap:10px}.answer{padding:15px;border-radius:15px;background:#2a345f;border:1px solid #46558d;font-weight:750;font-size:17px}.answer b{display:inline-grid;place-items:center;background:#5966a2;width:30px;height:30px;border-radius:9px;margin-right:10px}.answer.correct{border:2px solid var(--b);background:#124c49}.answer.wrong{border:2px solid var(--red);background:#54253a}
+.timerbox{display:flex;align-items:center;gap:14px;margin-top:20px}.timer{font-size:38px;font-weight:900;color:var(--yellow);min-width:62px;text-align:center}.track{height:10px;background:#3a4269;border-radius:10px;overflow:hidden;flex:1}.bar{height:100%;width:100%;background:linear-gradient(90deg,var(--b),var(--yellow));transition:width .2s linear}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}button{border:0;border-radius:14px;padding:14px 12px;font-weight:850;font-size:15px;color:white;background:#3a4679}button.primary{background:linear-gradient(100deg,#7456ff,#a14dff)}button.green{background:linear-gradient(100deg,#009f7c,#00c99a);color:#061e1a}button:disabled{opacity:.4}
+.small{font-size:12px;color:var(--muted);line-height:1.5}.scorehead{font-size:18px;font-weight:850;margin:0 0 12px}.scoreline{display:flex;gap:8px;margin:8px 0}.scoreline input{min-width:0;flex:1;background:#111833;border:1px solid #45517e;border-radius:11px;color:white;padding:12px;font-size:15px}.scoreline button{padding:10px 13px}.leader{display:flex;justify-content:space-between;padding:10px 12px;border-radius:10px;background:#222b50;margin-top:7px}.empty{color:var(--muted);font-size:13px}.reveal{margin-top:14px;padding:13px;border-radius:13px;background:#104a43;border:1px solid #00b98e;color:#baffed;font-weight:800;display:none}.footer{text-align:center;color:#8792c3;font-size:11px;padding:15px}
+@media(min-width:600px){.controls{grid-template-columns:1fr 1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<div class="live"><span class="dot"></span> PAINEL DO APRESENTADOR</div>
+<h1>DESAFIO <span>AO VIVO</span></h1>
+<p class="sub">Quiz de conhecimentos gerais • Português • Rodadas de 10 segundos</p>
+</header>
+
+<section class="card">
+<div class="row"><span class="tag" id="category">CONHECIMENTOS GERAIS</span><span class="counter" id="round">RODADA 1</span></div>
+<div class="question" id="question">Preparado para começar o desafio?</div>
+<div class="answers" id="answers">
+<div class="answer"><b>A</b> Aperte começar para ver a pergunta</div>
+<div class="answer"><b>B</b> Leia as alternativas em voz alta</div>
+<div class="answer"><b>C</b> Convide o público a comentar</div>
+</div>
+<div class="timerbox"><div class="timer" id="timer">10</div><div class="track"><div class="bar" id="bar"></div></div></div>
+<div class="reveal" id="reveal"></div>
+<div class="controls">
+<button class="primary" id="start">▶ Começar rodada</button>
+<button id="revealBtn" disabled>Ver resposta</button>
+<button class="green" id="next" disabled>Próxima pergunta →</button>
+<button id="reset">↻ Reiniciar quiz</button>
+</div>
+<p class="small">Dica para a LIVE: peça para todos comentarem A, B ou C antes de revelar a resposta. Nesta versão, o apresentador registra os pontos manualmente.</p>
+</section>
+
+<section class="card">
+<h2 class="scorehead">🏆 Placar dos participantes</h2>
+<div class="scoreline"><input id="player" maxlength="24" placeholder="Nome ou @ do participante"><button class="green" id="add">Adicionar</button></div>
+<div id="leaderboard"><p class="empty">Adicione participantes e registre os pontos conforme as respostas confirmadas no chat.</p></div>
+</section>
+<div class="footer">DESAFIO AO VIVO • Versão inicial gratuita • Painel de apoio, não transmite a LIVE sozinho.</div>
+</div>
+<script>
+const questions=[
+{c:"CIÊNCIA",q:"Qual é o maior planeta do Sistema Solar?",a:["Terra","Júpiter","Saturno"],ok:1,why:"Júpiter é o maior planeta do Sistema Solar."},
+{c:"GEOGRAFIA",q:"Qual é a capital do Canadá?",a:["Toronto","Vancouver","Ottawa"],ok:2,why:"Ottawa é a capital do Canadá."},
+{c:"ANIMAIS",q:"Qual destes animais é um mamífero que põe ovos?",a:["Ornitorrinco","Golfinho","Morcego"],ok:0,why:"O ornitorrinco é um mamífero monotremado."},
+{c:"HISTÓRIA",q:"Em que ano ocorreu a Independência do Brasil?",a:["1500","1822","1889"],ok:1,why:"A Independência do Brasil foi proclamada em 1822."},
+{c:"ESPORTES",q:"Quantos jogadores de cada time começam uma partida de futebol?",a:["9","10","11"],ok:2,why:"Cada equipe começa com 11 jogadores em campo."},
+{c:"CULTURA",q:"Quem escreveu 'O Pequeno Príncipe'?",a:["Monteiro Lobato","Antoine de Saint-Exupéry","Machado de Assis"],ok:1,why:"O autor foi Antoine de Saint-Exupéry."},
+{c:"MATEMÁTICA",q:"Quanto é 12 × 8?",a:["86","96","108"],ok:1,why:"12 multiplicado por 8 é igual a 96."},
+{c:"NATUREZA",q:"Qual é o maior oceano da Terra?",a:["Atlântico","Índico","Pacífico"],ok:2,why:"O Oceano Pacífico é o maior."},
+{c:"TECNOLOGIA",q:"O que significa a sigla WWW?",a:["World Wide Web","Web World Window","Wide Web World"],ok:0,why:"WWW significa World Wide Web."},
+{c:"CORPO HUMANO",q:"Qual órgão bombeia o sangue pelo corpo?",a:["Pulmão","Coração","Fígado"],ok:1,why:"O coração bombeia o sangue pelo sistema circulatório."},
+{c:"GEOGRAFIA",q:"Em qual continente fica o Egito?",a:["África","Europa","América"],ok:0,why:"O Egito fica no nordeste da África."},
+{c:"CURIOSIDADES",q:"Quantas cores tem o arco-íris na divisão tradicional?",a:["5","6","7"],ok:2,why:"Na divisão tradicional, são sete cores."},
+{c:"CIÊNCIA",q:"Qual gás as plantas absorvem principalmente na fotossíntese?",a:["Oxigênio","Gás carbônico","Hidrogênio"],ok:1,why:"As plantas absorvem dióxido de carbono (gás carbônico)."},
+{c:"ESPORTES",q:"Em qual esporte se usa uma raquete e uma peteca?",a:["Tênis","Badminton","Squash"],ok:1,why:"No badminton, os jogadores usam raquetes e uma peteca."},
+{c:"CULTURA",q:"Qual instrumento tem teclas pretas e brancas?",a:["Piano","Violino","Flauta"],ok:0,why:"O piano possui teclas brancas e pretas."}
+];
+let order=[],idx=-1,seconds=10,interval=null,locked=true,round=0;
+const $=id=>document.getElementById(id);
+function shuffle(){order=[...questions.keys()];for(let i=order.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}}
+function render(){let q=questions[order[idx]];locked=true;$("category").textContent=q.c;$("round").textContent="RODADA "+round;$("question").textContent=q.q;$("answers").innerHTML=q.a.map((v,i)=>`<div class="answer" id="ans${i}"><b>${"ABC"[i]}</b>${v}</div>`).join("");$("timer").textContent="10";$("bar").style.width="100%";$("reveal").style.display="none";$("revealBtn").disabled=false;$("next").disabled=true;$("start").disabled=true}
+function stop(){if(interval){clearInterval(interval);interval=null}}
+function showAnswer(){if(!locked)return;locked=false;stop();let q=questions[order[idx]];document.querySelectorAll(".answer").forEach((el,i)=>{if(i===q.ok)el.classList.add("correct")});$("reveal").textContent="✅ Resposta: "+ "ABC"[q.ok]+" — "+q.a[q.ok]+". "+q.why;$("reveal").style.display="block";$("revealBtn").disabled=true;$("next").disabled=false;$("start").disabled=false}
+function tick(){seconds--; $("timer").textContent=seconds;$("bar").style.width=(seconds/10*100)+"%";if(seconds<=0){showAnswer()}}
+$("start").onclick=()=>{if(idx===-1||idx>=order.length){shuffle();idx=0;round=1}else{round++}render();seconds=10;interval=setInterval(tick,1000)};
+$("revealBtn").onclick=showAnswer;
+$("next").onclick=()=>{stop();idx++;if(idx>=order.length){$("question").textContent="🎉 Você concluiu todas as perguntas!";$("category").textContent="FIM DO QUIZ";$("answers").innerHTML='<div class="answer">Reinicie para embaralhar e jogar novamente.</div>';$("timer").textContent="—";$("bar").style.width="0";$("reveal").style.display="none";$("next").disabled=true;$("start").disabled=false;idx=order.length;return}round++;render();seconds=10;interval=setInterval(tick,1000)};
+$("reset").onclick=()=>{stop();idx=-1;round=0;seconds=10;$("category").textContent="CONHECIMENTOS GERAIS";$("round").textContent="RODADA 1";$("question").textContent="Preparado para começar o desafio?";$("answers").innerHTML='<div class="answer"><b>A</b> Aperte começar para ver a pergunta</div><div class="answer"><b>B</b> Leia as alternativas em voz alta</div><div class="answer"><b>C</b> Convide o público a comentar</div>';$("timer").textContent="10";$("bar").style.width="100%";$("reveal").style.display="none";$("start").disabled=false;$("revealBtn").disabled=true;$("next").disabled=true};
+let players=[];
+function updateBoard(){let board=$("leaderboard");if(!players.length){board.innerHTML='<p class="empty">Nenhum participante cadastrado ainda.</p>';return}board.innerHTML=players.slice().sort((a,b)=>b.points-a.points).map((p,i)=>`<div class="leader"><span>${i===0?"🥇":i===1?"🥈":i===2?"🥉":"🏅"} ${escapeHtml(p.name)}</span><strong>${p.points} pts</strong><span><button data-add="${escapeHtml(p.name)}" style="padding:5px 9px;font-size:12px">+1</button></span></div>`).join("");board.querySelectorAll("[data-add]").forEach(btn=>btn.onclick=()=>{let p=players.find(x=>x.name===btn.dataset.add);if(p){p.points++;updateBoard()}})}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+$("add").onclick=()=>{let name=$("player").value.trim();if(!name)return;if(!players.some(p=>p.name.toLowerCase()===name.toLowerCase()))players.push({name,points:0});$("player").value="";updateBoard()};
+$("player").addEventListener("keydown",e=>{if(e.key==="Enter")$("add").click()});
+</script>
+</body>
+</html>
